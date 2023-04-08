@@ -1,0 +1,31 @@
+- hosts: all #暂时仅支持ubuntu，centos不确定
+  become: true
+
+  tasks:
+    - name: Install necessary system tools
+      package:
+        name: "{{ item }}"
+        state: present
+      with_items:
+        - gcc
+        - make
+        - autoconf
+        - vim
+        - sysstat
+        - net-tools
+        - iftop
+        - wget
+        - lrzsz
+        - lsof
+        - unzip
+        - openssh-client
+        - net-tools
+        - ntpdate
+
+    - name: Set timezone and synchronize time #默认为中国上海时区
+      command: ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+
+    - name: Add ntpdate to crontab #每天凌晨1点同步时间
+      lineinfile:
+        path: /etc/crontab
+        line: "* 1 * * * root ntpdate ntp.api.bz > /dev/null 2>&1"
